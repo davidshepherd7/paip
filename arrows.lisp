@@ -4,6 +4,22 @@
         (funcall insert-fun acc next)
         (list next acc))))
 
+(defun <>p (form)
+  "predicate identifying the placeholders for the -<> and -<>> macros."
+  (and (symbolp form)
+       (string= form "<>")))
+
+(defun insert-first (arg surround)
+  "Inserts ARG into the list form SURROUND as its first argument, after the
+operator."
+  (list* (car surround)
+         arg
+         (cdr surround)))
+
+(defun insert-last (arg surround)
+  "Inserts ARG into the list form SURROUND as its last argument."
+(append surround (list arg)))
+
 (defmacro -> (initial-form &rest forms)
   "Inserts INITIAL-FORM as first argument into the first of FORMS, the result
 into the next, etc., before evaluation.  FORMS are treated as list designators."
@@ -41,21 +57,5 @@ end like in ->>.  Also known as diamond spear."
   (reduce (diamond-inserter #'insert-last)
           forms
           :initial-value initial-form))
-
-(defun <>p (form)
-  "Predicate identifying the placeholders for the -<> and -<>> macros."
-  (and (symbolp form)
-       (string= form "<>")))
-
-(defun insert-first (arg surround)
-  "Inserts ARG into the list form SURROUND as its first argument, after the
-operator."
-  (list* (car surround)
-         arg
-         (cdr surround)))
-
-(defun insert-last (arg surround)
-  "Inserts ARG into the list form SURROUND as its last argument."
-(append surround (list arg)))
 
 (provide 'arrows)
